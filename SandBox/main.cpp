@@ -153,7 +153,7 @@ public:
 				break;
 			}
 		}
-		//std::this_thread::sleep_for(2s); //Just for testing purposes
+		std::this_thread::sleep_for(2s); //Just for testing purposes
 	}
 
 	~A()
@@ -377,7 +377,8 @@ public:
 
 		//Version 1 
 		std::future<void> fuController = std::async(std::launch::async, std::ref(*this));
-		fuController.wait();
+		//fuController.wait(); //This line is not required as
+		//the Controller thread waits for all A, B, C, D threads to finish in ThreadCountProxy::WaitUntilThreadsDone();
 	}
 	void operator()()
 	{
@@ -423,9 +424,8 @@ int main()
 
 	//Key press
 	_getch();
-
 	Debug::out("key pressed <-----\n");
-	// Controller are you done?
+
 	oController.Launch();
 
 }
