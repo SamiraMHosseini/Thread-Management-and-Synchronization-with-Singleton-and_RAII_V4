@@ -127,10 +127,11 @@ public:
 	{
 		//Spawn a thread 
 		//Version 1
-		std::function<void()> threadFunc =  [this]() { this->operator()(); };
+		std::function<void()> threadFunc = [this]() { this->operator()(); };
 		this->threadA = std::thread(threadFunc);
 
 	}
+	//This function then initiates the actual thread starting
 	void operator()()
 	{
 		START_BANNER;
@@ -185,6 +186,7 @@ public:
 		//Version 2
 		this->threadB = std::thread(&B::operator(), this);
 	}
+	//This function then initiates the actual thread starting
 	void operator()()
 	{
 		START_BANNER;
@@ -231,6 +233,7 @@ public:
 	{
 		assert(!threadC.joinable());
 	}
+	//This function then initiates the actual thread starting
 	void launch()
 	{
 		//Spawn a thread 
@@ -290,10 +293,11 @@ public:
 
 	{
 
-		assert(!threadD.joinable());
+
 
 	}
 
+	//This function then initiates the actual thread starting
 	void Launch()
 	{
 		//Spawn a thread 
@@ -348,6 +352,8 @@ public:
 		{
 			threadD.join();
 		}
+		else
+			assert(false);
 	}
 	//Data
 private:
@@ -361,16 +367,19 @@ class Controller : public BannerBase
 
 public:
 	Controller() = delete;
-	Controller(const char* const pName) :
-		BannerBase(pName) {}/*, thread()
+	Controller(const char* const pName, SharedResource& sr_) :
+		BannerBase(pName), thread(), sr(sr_)
 	{
 		assert(!this->thread.joinable());
-	}*/
-	/*void Launch()
+	}
+	void Launch()
 	{
-		this->thread = std::thread(std::ref(*this));
-	}*/
-	void operator()(SharedResource& sr)
+
+		//Version 1 
+		std::future<void> fuController = std::async(std::launch::async, std::ref(*this));
+		fuController.wait();
+	}
+	void operator()()
 	{
 		START_BANNER;
 
@@ -380,7 +389,7 @@ public:
 		// wait until all are done
 		ThreadCountProxy::WaitUntilThreadsDone();
 	}
-	/*~Controller()
+	~Controller()
 	{
 		if (this->thread.joinable())
 		{
@@ -388,8 +397,8 @@ public:
 		}
 	}
 private:
-	std::thread thread;*/
-
+	std::thread thread;
+	SharedResource& sr;
 };
 
 
@@ -405,33 +414,19 @@ int main()
 	C oC("C", sharedResource);
 	D oD("D", sharedResource);
 
-
 	oA.Launch();
 	oB.Launch();
 	oC.launch();
 	oD.Launch();
 
+	Controller oController("Controller", sharedResource);
 
-	Controller oController("Controller");
-
-	
-	//Version 1 
-	std::future<void> fuController = std::async(std::launch::deferred,
-		std::ref(oController),
-		std::ref(sharedResource));
-
-	//OR
-	//Version 2
-	//std::future<void> fuController = std::async(std::launch::deferred,
-	//	std::ref(oController),
-	//	std::move(sharedResource)); //It is not working as sharedResource is being used in A, B, C, D classes
-
-	// Key press
+	//Key press
 	_getch();
 
 	Debug::out("key pressed <-----\n");
 	// Controller are you done?
-	fuController.get();
+	oController.Launch();
 
 }
 
