@@ -52,4 +52,7 @@ The Controller thread waits for a key press and then signals the other threads t
 In summary, the Singleton pattern is used to create a single, shared instance of the ThreadCountProxy class that manages the thread count state across all threads. The pattern ensures that the state is centralized, thread-safe, and resource-efficient, making it an effective solution for managing shared state in a multithreaded environment.
   
   # Launching a thread from class A, B, C, D
-  In the given code, the A, B, C, and D classes each have a Launch() method that spawns a new thread to execute the member function operator(). There are a few different ways to launch a new thread in C++, but in this code, the built-in std::thread class is used.
+  In the given code, the A, B, C, and D classes each have a Launch() method that spawns a new thread to execute the member function operator(). 
+  
+ The A, B, C, and D classes each have a Launch() method that creates a new std::thread object to execute the operator() member function of the class in a new thread.
+Once the new std::thread object is created, it is stored in a member variable of the class so that it can be joined later in the class destructor to ensure that the thread completes before the object is destroyed.
