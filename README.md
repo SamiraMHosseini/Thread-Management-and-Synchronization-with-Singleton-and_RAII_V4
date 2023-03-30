@@ -1,4 +1,5 @@
-# Thread Management and Synchronization with Meyer Singleton and RAII
+# Thread Synchronization in C++ with Futures and Promises: 
+# Coordinating Threads using Meyer's Singleton and Condition Variables, with Built-in Thread Launch
 
 
 This code demonstrates the use of multithreading, synchronization, and the Meyer's Singleton pattern in C++. The main functionality is distributed across multiple threads that run concurrently, while the Meyer's Singleton pattern is used to manage thread count.
